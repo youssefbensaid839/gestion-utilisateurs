@@ -24,9 +24,9 @@ Application web Flask avec :
 - Tailwind CSS (via CDN)
 ## Files
 - app.py
-templates/ (avec login.html, signup.html, crud.html)
-static/css/ (avec tailwind.css )
-requirements.txt
-- Werkzeug pour le hachage des mots de passe
+-templates/ (avec login.html, signup.html, crud.html)
+-static/css/ (avec tailwind.css )
+-requirements.txt
 
-Contact : [ton email ou ton nom]
+
+
