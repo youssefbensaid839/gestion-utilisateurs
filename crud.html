@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des utilisateurs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { theme: { extend: { colors: { primary: '#4f46e5' } } } }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-900">Gestion des utilisateurs</h1>
+            <a href="{{ url_for('logout') }}" class="text-red-600 hover:text-red-800 font-medium">Déconnexion</a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-6 p-4 rounded-lg {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Liste des utilisateurs -->
+        <div class="bg-white shadow rounded-xl overflow-hidden mb-10">
+            <div class="px-6 py-5 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-900">Utilisateurs enregistrés</h2>
+            </div>
+            <div class="divide-y divide-gray-200">
+                {% if users %}
+                    {% for user in users %}
+                        <div class="px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">{{ user.email }}</p>
+                                <p class="text-xs text-gray-500">ID: {{ user.id }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="px-6 py-8 text-center text-gray-500">Aucun utilisateur pour le moment</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Formulaire Update -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white shadow rounded-xl p-6">
+                <h3 class="text-lg font-medium mb-4">Modifier un utilisateur</h3>
+                <form method="POST">
+                    <input type="hidden" name="action" value="update">
+                    <div class="space-y-4">
+                        <input type="number" name="user_id" placeholder="ID de l'utilisateur" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
+                        <input type="email" name="new_email" placeholder="Nouvelle adresse email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
+                        <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg hover:bg-primaryDark transition">Mettre à jour</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Formulaire Delete -->
+            <div class="bg-white shadow rounded-xl p-6">
+                <h3 class="text-lg font-medium mb-4">Supprimer un utilisateur</h3>
+                <form method="POST">
+                    <input type="hidden" name="action" value="delete">
+                    <div class="space-y-4">
+                        <input type="number" name="user_id" placeholder="ID de l'utilisateur" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
+                        <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition">Supprimer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+<!-- Tailwind CSS CDN (version la plus récente en 2026) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Optionnel : configuration personnalisée (couleurs, etc.) -->
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#4f46e5',     // indigo-600
+          primaryDark: '#4338ca', // indigo-700
+        }
+      }
+    }
+  }
+</script>
