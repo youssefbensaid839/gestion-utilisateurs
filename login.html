@@ -4,12 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - Mon App</title>
+<!-- === TAILWIND CSS CDN === -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuration personnalisée (optionnelle mais recommandée) -->
     <script>
       tailwind.config = {
-        theme: { extend: { colors: { primary: '#4f46e5' } } }
+        theme: {
+          extend: {
+            colors: {
+              primary: '#4f46e5',       // indigo-600 - couleur principale
+              primaryDark: '#4338ca',   // indigo-700 - pour le hover
+            }
+          }
+        }
       }
     </script>
+    <!-- Fin Tailwind -->
 </head>
 <body class="h-full bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
     <div class="w-full max-w-md">
@@ -29,6 +40,7 @@
                 {% endwith %}
 
                 <form method="POST" class="space-y-5">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">Adresse email</label>
                         <input type="email" name="email" id="email" required
@@ -55,19 +67,3 @@
     </div>
 </body>
 </html>
-<!-- Tailwind CSS CDN (version la plus récente en 2026) -->
-<script src="https://cdn.tailwindcss.com"></script>
-
-<!-- Optionnel : configuration personnalisée (couleurs, etc.) -->
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          primary: '#4f46e5',     // indigo-600
-          primaryDark: '#4338ca', // indigo-700
-        }
-      }
-    }
-  }
-</script>
