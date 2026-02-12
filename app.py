@@ -3,9 +3,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_wtf.csrf import CSRFProtect
 import pyodbc  # Required for SQL Server connection, but SQLAlchemy handles it via dialect
 
 app = Flask(__name__)
+csrf = CSRFProtect(app)
 app.secret_key = 'your_secret_key'  # Change this to a secure random key
 
 # SQL Server connection string
@@ -85,27 +87,52 @@ def crud():
         return redirect(url_for('login'))
     
     users = User.query.all()  # Read all users
-    
-    if request.method == 'POST':
-        action = request.form['action']
-        user_id = int(request.form['user_id'])
-        
-        if action == 'update':
-            new_email = request.form['new_email']
-            user = User.query.get(user_id)
-            if user:
-                user.email = new_email
-                db.session.commit()
-                flash('User updated', 'success')
-        
-        elif action == 'delete':
-            user = User.query.get(user_id)
-            if user:
-                db.session.delete(user)
-                db.session.commit()
-                flash('User deleted', 'success')
-    
     return render_template('crud.html', users=users)
+# Route pour UPDATE (modifier l'email d'un utilisateur)
+@app.route('/users/<int:user_id>/update', methods=['POST'])
+def update_user(user_id):
+    if 'user_id' not in session:
+        flash('Veuillez vous connecter', 'error')
+        return redirect(url_for('login'))
+    
+    user = User.query.get_or_404(user_id)  # 404 si l'utilisateur n'existe pas
+    
+    new_email = request.form.get('new_email')
+    if not new_email:
+        flash('Nouvelle adresse email requise', 'error')
+        return redirect(url_for('crud'))
+    
+    # Optionnel : vérifier que l'email n'est pas déjà pris par un autre
+    existing = User.query.filter_by(email=new_email).first()
+    if existing and existing.id != user_id:
+        flash('Cet email est déjà utilisé', 'error')
+        return redirect(url_for('crud'))
+    
+    user.email = new_email
+    db.session.commit()
+    flash('Utilisateur mis à jour avec succès', 'success')
+    
+    return redirect(url_for('crud'))
 
+
+# Route pour DELETE (supprimer un utilisateur)
+@app.route('/users/<int:user_id>/delete', methods=['POST'])
+def delete_user(user_id):
+    if 'user_id' not in session:
+        flash('Veuillez vous connecter', 'error')
+        return redirect(url_for('login'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    # Optionnel : empêcher de supprimer son propre compte
+    if user.id == session['user_id']:
+        flash('Vous ne pouvez pas supprimer votre propre compte', 'error')
+        return redirect(url_for('crud'))
+    
+    db.session.delete(user)
+    db.session.commit()
+    flash('Utilisateur supprimé avec succès', 'success')
+    
+    return redirect(url_for('crud'))
 if __name__ == '__main__':
     app.run(debug=True)
